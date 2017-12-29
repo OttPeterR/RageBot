@@ -9,12 +9,15 @@ if len(sys.argv) != 3:
 bot_token = sys.argv[1]
 https_url = sys.argv[2]
 
-test_url = https_url+"/{}".format(bot_token)
+test_url = "{}/{}".format(https_url, bot_token)
+print test_url
+
 
 def get_url(method):
-    return "https://api.telegram.org/bot{}/{}".format(bot_token,method)
+    return "https://api.telegram.org/bot{}/{}".format(bot_token, method)
 
-r = requests.get(get_url("setWebhook"), data={"url": test_url})
+
+requests.get(get_url("setWebhook"), data={"url": test_url})
 r = requests.get(get_url("getWebhookInfo"))
 pprint(r.status_code)
 pprint(r.json())
