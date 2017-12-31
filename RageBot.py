@@ -7,19 +7,64 @@ class RageBot:
         self.user_rage_scores = {}
         self.analyzer = analyzer()
 
+    def __update_user_rage(self, chatid, username, sentiment):
+        chatid = str(chatid)
+        username = str(username)
+
+        # getting chat dictionary, creating if not exists
+        chat = None
+        if chatid not in self.user_rage_scores:
+            chat = {}
+            self.user_rage_scores[chatid] = chat
+        else:
+            chat = self.user_rage_scores[chatid]
+
+        # adding sentiment to user, creating if not exists
+        if username not in chat:
+            chat[username] = sentiment
+        else:
+            chat[username] += sentiment
+
+        return self.user_rage_scores[chatid][username]
+
+    # update dictionary:
+    # {u'message':
+    #   {u'date': 1234567890, u'text': u'Message-Here',
+    #   u'from':
+    #     {u'username': u'User-Here', u'first_name': u'Name-Here',
+    #     u'last_name': u'LastName-Here', u'is_bot': False,
+    #     u'language_code': u'en', u'id': 1234567890},
+    #     u'message_id': 1234567890,
+    #     u'chat':
+    #       {u'username': u'User-He re', u'first_name': u'Name-Here',
+    #       u'last_name': u'LastName-Here', u'type': u'private',
+    #       u'id': 1234567890}
+    #   },
+    #   u'update_id': 1234567890}
+
     def pass_message(self, update):
+
+        # extract some data from the message
         message_text = update['message']['text']
+        chatid = update['message']['from']['id']
+        username = update['message']['from']['username']
+
+        # process commands
         if(message_text[0] == '/'):
-            # the message is a command
+
             if(message_text[:10] == "/scorethis"):
                 if len(message_text) == 10:
                     return "Usage: /scorethis I am bad at using commands"
                 score = self.analyzer.score_sentiment(message_text[10:])
                 return str(score.polarity)
+
             elif(message_text == "/myrage"):
                 # lookup the chat and user and return their current rage rank
                 return "--- under construction ---"
+            elif(message_text == "/getallrage"):
+                return str(self.user_rage_scores)
+        # not a command, process messages
         else:
             score = self.analyzer.score_sentiment(message_text)
-            # put it into the dictionary of users and their scores
+            self.__update_user_rage(chatid, username, score.polarity)
             return None
