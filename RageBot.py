@@ -11,10 +11,10 @@ class RageBot:
         message_text = update['message']['text']
         if(message_text[0] == '/'):
             # the message is a command
-            if(message_text[:11] == "/scoreThis "):
+            if(message_text[:11] == "/scorethis "):
                 score = self.analyzer.score_sentiment(message_text[11:])
                 return str(score.polarity)
-            elif(message_text == "/myRage"):
+            elif(message_text == "/myrage"):
                 # lookup the chat and user and return their current rage rank
                 return "--- under construction ---"
         else:
