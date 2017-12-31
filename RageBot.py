@@ -55,6 +55,9 @@ class RageBot:
 
     def pass_message(self, update):
 
+        if 'message' not in update or 'text' not in update['message']:
+            return None
+
         # extract some data from the message
         message_text = update['message']['text']
         chatid = update['message']['chat']['id']
