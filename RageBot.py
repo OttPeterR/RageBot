@@ -7,17 +7,28 @@ class RageBot:
         self.user_rage_scores = {}
         self.analyzer = analyzer()
 
-    def __update_user_rage(self, chatid, username, sentiment):
-        chatid = str(chatid)
-        username = str(username)
-
+    def __get_chat(self, chatid):
         # getting chat dictionary, creating if not exists
         chat = None
+
         if chatid not in self.user_rage_scores:
             chat = {}
             self.user_rage_scores[chatid] = chat
         else:
             chat = self.user_rage_scores[chatid]
+        return chat
+
+    def __get_rage(self, username, chatid):
+        username = str(username)
+        chat = self.__get_chat(chatid)
+        if username not in chat:
+            chat[username] = 0
+        return chat[username]
+
+    def __update_user_rage(self, chatid, username, sentiment):
+        username = str(username)
+
+        chat = self.__get_chat(chatid)
 
         # adding sentiment to user, creating if not exists
         if username not in chat:
@@ -46,7 +57,7 @@ class RageBot:
 
         # extract some data from the message
         message_text = update['message']['text']
-        chatid = update['message']['from']['id']
+        chatid = update['message']['chat']['id']
         username = update['message']['from']['username']
 
         # process commands
@@ -58,10 +69,10 @@ class RageBot:
                 score = self.analyzer.score_sentiment(message_text[10:])
                 return str(score.polarity)
 
-            elif(message_text == "/myrage"):
+            elif(message_text[:7] == "/myrage"):
                 # lookup the chat and user and return their current rage rank
-                return "--- under construction ---"
-            elif(message_text == "/getallrage"):
+                return self.__get_rage(username, chatid)
+            elif(message_text[:11] == "/getallrage"):
                 return str(self.user_rage_scores)
         # not a command, process messages
         else:
