@@ -23,7 +23,10 @@ def get_url(method):
 
 def process_message(update):
     data = {}
-    data["chat_id"] = update["message"]["from"]["id"]
+    
+    data["chat_id"] = update["message"]["chat"]["id"]
+    # to send back to the user, make it update["message"]["from"]["id"]
+
     response = ragebot.pass_message(update)
     if response is not None:
         data["text"] = response
