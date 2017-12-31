@@ -1,7 +1,10 @@
+from textblob import TextBlob
+
 class analyzer():
 
     def __init__(self):
-        pass
+        analyzer = None
 
     def score_sentiment(self, text):
-        return 0
+        self.analyzer = TextBlob(text)
+        return self.analyzer.sentiment
