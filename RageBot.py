@@ -1,3 +1,4 @@
+import RageBotUtility
 from sentiment_analysis import analyzer
 
 
@@ -6,7 +7,7 @@ class RageBot:
     def __init__(self):
         self.user_rage_scores = {}
         self.analyzer = analyzer()
-        self.rage_cool_down = 0.05
+        self.rage_cool_down = 0.005
 
     def __get_chat(self, chatid):
         # getting chat dictionary, creating if not exists
@@ -56,7 +57,9 @@ class RageBot:
 
     def pass_message(self, update):
 
-        if 'message' not in update or 'text' not in update['message']:
+        if 'message' not in update or \
+                'text' not in update['message']or \
+                'username' not in update['message']['from']:
             return None
 
         # extract some data from the message
@@ -87,21 +90,7 @@ class RageBot:
     def tick(self, seconds):
         for chat in self.user_rage_scores:
             for user in self.user_rage_scores[chat]:
-                sign = None
-                rage = self.user_rage_scores[chat][user]
-                if rage == 0:
-                    pass
-                elif rage > 0:
-                    sign = True
-                    self.user_rage_scores[chat][user] \
-                        -= (self.rage_cool_down * seconds)
-                elif rage < 0:
-                    sign = False
-                    self.user_rage_scores[chat][user] \
-                        += (self.rage_cool_down * seconds)
-                if sign is not None:
-                    rage = self.user_rage_scores[chat][user]
-                    if (rage > 0 and sign is False) or \
-                       (rage < 0 and sign is True):
-                        self.user_rage_scores[chat][user] = 0
+                self.user_rage_scores[chat][user] =  \
+                    RageBotUtility.cooldown(self.user_rage_scores[chat][user],
+                                            self.rage_cool_down, seconds)
         return None
