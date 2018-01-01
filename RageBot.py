@@ -61,8 +61,9 @@ class RageBot:
 
         if 'message' not in update or \
                 'text' not in update['message']or \
-                'username' not in update['message']['from']:
-            return "problem with this message\n%s" % str(update)
+                'id' not in update['message']['from']:
+            print "problem with this message"
+            return None
 
         # extract some data from the message
         message_text = update['message']['text']
