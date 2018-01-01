@@ -1,6 +1,7 @@
 import time
-import sys
 import requests
+from multiprocessing import Process
+from multiprocessing.managers import BaseManager
 from flask import Flask, request
 from RageBot import RageBot
 
@@ -9,7 +10,13 @@ app = Flask(__name__)
 token_file = open("bot_token.txt", 'r')
 bot_token = str(token_file.read())
 token_file.close()
-ragebot = RageBot()
+tick_seconds = 1
+
+
+class MyManager(BaseManager):
+    pass
+MyManager.register('RageBot', RageBot)
+
 
 
 def get_url(method):
@@ -37,5 +44,18 @@ def process_update():
         return "ok!", 200
 
 
+def tick_loop():
+    while True:
+        ragebot.tick(tick_seconds)
+        time.sleep(tick_seconds)
+
+
 if __name__ == "__main__":
+    manager = MyManager()
+    manager.start()
+    ragebot = manager.RageBot()
+
+    p = Process(target=tick_loop)
+    p.start()
     app.run(debug=True, use_reloader=False)
+    p.join()

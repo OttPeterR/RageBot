@@ -6,6 +6,7 @@ class RageBot:
     def __init__(self):
         self.user_rage_scores = {}
         self.analyzer = analyzer()
+        self.rage_cool_down = 0.05
 
     def __get_chat(self, chatid):
         # getting chat dictionary, creating if not exists
@@ -82,3 +83,14 @@ class RageBot:
             score = self.analyzer.score_sentiment(message_text)
             self.__update_user_rage(chatid, username, score.polarity)
             return None
+
+    def tick(self, seconds):
+        for chat in self.user_rage_scores:
+            for user in self.user_rage_scores[chat]:
+                if self.user_rage_scores[chat][user] > 0:
+                    self.user_rage_scores[chat][user] \
+                        -= (self.rage_cool_down * seconds)
+                elif self.user_rage_scores[chat][user] < 0:
+                    self.user_rage_scores[chat][user] \
+                        += (self.rage_cool_down * seconds)
+        return None
