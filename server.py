@@ -1,15 +1,10 @@
+import time
 import sys
 import requests
 from flask import Flask, request
 from RageBot import RageBot
 
 app = Flask(__name__)
-
-
-if len(sys.argv) != 2:
-    print("usage:\n\texport FLASK_APP=server.py\n\tflask run")
-    exit()
-
 
 token_file = open("bot_token.txt", 'r')
 bot_token = str(token_file.read())
@@ -23,7 +18,7 @@ def get_url(method):
 
 def process_message(update):
     data = {}
-    
+
     data["chat_id"] = update["message"]["chat"]["id"]
     # to send back to the user, make it update["message"]["from"]["id"]
 
@@ -40,3 +35,7 @@ def process_update():
         if "message" in update:
             process_message(update)
         return "ok!", 200
+
+
+if __name__ == "__main__":
+    app.run(debug=True, use_reloader=False)
