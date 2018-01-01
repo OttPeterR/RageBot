@@ -57,30 +57,35 @@ class RageBot:
 
     def pass_message(self, update):
 
+        print(str(update))
+
         if 'message' not in update or \
                 'text' not in update['message']or \
                 'username' not in update['message']['from']:
-            return None
+            return "problem with this message\n%s" % str(update)
 
         # extract some data from the message
         message_text = update['message']['text']
         chatid = update['message']['chat']['id']
-        username = update['message']['from']['username']
+        username = update['message']['from']['id']
 
         # process commands
         if(message_text[0] == '/'):
 
             if(message_text[:10] == "/scorethis"):
-                if len(message_text) == 10:
+                if message_text == "/scorethis" or \
+                   message_text == "/scorethis@TheRageBot":
                     return "Usage: /scorethis I am bad at using commands"
-                score = self.analyzer.score_sentiment(message_text[10:])
-                return str(score.polarity)
+                else:
+                    score = self.analyzer.score_sentiment(message_text[10:])
+                    return str(score.polarity)
 
             elif(message_text[:7] == "/myrage"):
                 # lookup the chat and user and return their current rage rank
                 return self.__get_rage(username, chatid)
             elif(message_text[:11] == "/getallrage"):
-                return str(self.user_rage_scores)
+                return "You are: %s\n%s" \
+                    % (str(username), str(self.user_rage_scores))
         # not a command, process messages
         else:
             score = self.analyzer.score_sentiment(message_text)
