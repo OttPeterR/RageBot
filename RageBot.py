@@ -87,10 +87,21 @@ class RageBot:
     def tick(self, seconds):
         for chat in self.user_rage_scores:
             for user in self.user_rage_scores[chat]:
-                if self.user_rage_scores[chat][user] > 0:
+                sign = None
+                rage = self.user_rage_scores[chat][user]
+                if rage == 0:
+                    pass
+                elif rage > 0:
+                    sign = True
                     self.user_rage_scores[chat][user] \
                         -= (self.rage_cool_down * seconds)
-                elif self.user_rage_scores[chat][user] < 0:
+                elif rage < 0:
+                    sign = False
                     self.user_rage_scores[chat][user] \
                         += (self.rage_cool_down * seconds)
+                if sign is not None:
+                    rage = self.user_rage_scores[chat][user]
+                    if (rage > 0 and sign is False) or \
+                       (rage < 0 and sign is True):
+                        self.user_rage_scores[chat][user] = 0
         return None
