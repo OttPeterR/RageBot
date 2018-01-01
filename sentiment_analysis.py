@@ -1,9 +1,10 @@
 from textblob import TextBlob
 
+
 class analyzer():
 
     def __init__(self):
-        analyzer = None
+        self.analyzer = None
 
     def score_sentiment(self, text):
         self.analyzer = TextBlob(text)
